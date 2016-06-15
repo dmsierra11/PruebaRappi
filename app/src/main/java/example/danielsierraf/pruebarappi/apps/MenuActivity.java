@@ -1,9 +1,11 @@
 package example.danielsierraf.pruebarappi.apps;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteConstraintException;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,25 +14,28 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.raizlabs.android.dbflow.sql.language.From;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import example.danielsierraf.pruebarappi.R;
 import example.danielsierraf.pruebarappi.api.PublicService;
 import example.danielsierraf.pruebarappi.api.RestClientPublic;
 import example.danielsierraf.pruebarappi.api.classes.AppDetail;
 import example.danielsierraf.pruebarappi.api.classes.Response_;
-import example.danielsierraf.pruebarappi.model.Entry;
-import example.danielsierraf.pruebarappi.model.Entry_Table;
+import example.danielsierraf.pruebarappi.model.AppDatabase;
 import example.danielsierraf.pruebarappi.utils.Helper;
+import example.danielsierraf.pruebarappi.utils.PruebaRappiApp;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,44 +44,67 @@ import retrofit2.Response;
  * Created by danielsierraf on 6/11/16.
  */
 public class MenuActivity extends AppCompatActivity {
+    @BindView(R.id.categories)
+    LinearLayout mCategories;
     @BindView(R.id.card_recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.btn_all_categories)
+    Button btn_all_categories;
 
     private static final String TAG = "MenuActivity";
     private static final PublicService publicService = new RestClientPublic().getPublicService();
+    List<AppDetail> entry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_menu);
         ButterKnife.bind(this);
         FlowManager.init(new FlowConfig.Builder(this)
                 .openDatabasesOnInit(true).build());
-//        progressBar.setVisibility(View.VISIBLE);
+        getAppsDataFromService();
+        registerReceiver(new NetworkStatusReceiver(),
+                new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+    }
+
+    private void getAppsDataFromService(){
+        progressBar.setVisibility(View.VISIBLE);
         publicService.getResponse().enqueue(new Callback<Response_>() {
             @Override
             public void onResponse(Call<Response_> call, Response<Response_> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response != null && response.isSuccessful()){
-                    List<AppDetail> entry = response.body().getFeed().getEntry();
-                    initViews(entry);
-                    insertToDatabase(entry);
+                    entry = response.body().getFeed().getEntry();
+                    if (entry != null){
+                        initViews();
+                        AppDatabase.deleteEntryTable();
+                        AppDatabase.insertEntryToDatabase(entry);
+                    }
                 }
-//                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<Response_> call, Throwable t) {
                 Log.d(TAG, "Service Failed");
-//                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                entry = AppDatabase.getEntryFromDatabase();
+                if (entry != null)
+                    initViews();
             }
         });
     }
 
-    private void initViews(final List<AppDetail> entry){
-        mRecyclerView.setHasFixedSize(true);
+    private void initViews(){
+        btn_all_categories.setVisibility(View.VISIBLE);
 
+        //Categories
+        List<String> categories = getCategories(entry);
+        addCategoryButtons(categories);
+
+        //List of apps
+        mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager;
         if (Helper.isTabletSize(this)){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -86,12 +114,13 @@ public class MenuActivity extends AppCompatActivity {
             layoutManager = new LinearLayoutManager(this);
         }
         mRecyclerView.setLayoutManager(layoutManager);
-
-//        final ArrayList pictures = prepareData();
         DataAdapter adapter = new DataAdapter(entry, this);
-
         mRecyclerView.setAdapter(adapter);
 
+        addOnItemTouchListener();
+    }
+
+    private void addOnItemTouchListener(){
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             GestureDetector gestureDetector = new GestureDetector(getApplicationContext(),
                     new GestureDetector.SimpleOnGestureListener() {
@@ -107,8 +136,7 @@ public class MenuActivity extends AppCompatActivity {
                 View child = rv.findChildViewUnder(e.getX(), e.getY());
                 if(child != null && gestureDetector.onTouchEvent(e)) {
                     int position = rv.getChildAdapterPosition(child);
-//                    Toast.makeText(getApplicationContext(), entry.get(position).getImName().getLabel(),
-//                            Toast.LENGTH_SHORT).show();
+
                     AppDetail appDetail = entry.get(position);
                     Intent intent = new Intent(MenuActivity.this, AppDetailActivity.class);
                     intent.putExtra(AppDetailActivity.EXTRA_IMAGE, appDetail.getImImage().get(2)
@@ -145,39 +173,53 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
-    private void insertToDatabase(List<AppDetail> appDetails){
-        Log.d(TAG, "Respuesta SQLITE: "+SQLite.select(Entry_Table.imName).from(Entry.class));
-        for (AppDetail appDetail: appDetails){
-            try{
-                SQLite.insert(Entry.class)
-                        .columns(Entry_Table.imName,
-                                Entry_Table.imImage,
-                                Entry_Table.summary,
-                                Entry_Table.imPrice,
-                                Entry_Table.imContentType,
-                                Entry_Table.rights,
-                                Entry_Table.title,
-                                Entry_Table.link,
-                                Entry_Table.id,
-                                Entry_Table.imArtist,
-                                Entry_Table.category,
-                                Entry_Table.imReleaseDate)
-                        .values(appDetail.getImName().getLabel(),
-                                appDetail.getImImage().get(2).getLabel(),
-                                appDetail.getSummary().getLabel(),
-                                appDetail.getImPrice().getLabel(),
-                                appDetail.getImContentType().getAttributes().getLabel(),
-                                appDetail.getRights().getLabel(),
-                                appDetail.getTitle().getLabel(),
-                                appDetail.getLink().getAttributes().getHref(),
-                                appDetail.getId().getAttributes().getImId(),
-                                appDetail.getImArtist().getLabel(),
-                                appDetail.getCategory().getAttributes().getLabel(),
-                                appDetail.getImReleaseDate().getAttributes().getLabel())
-                        .execute();
-            } catch (SQLiteConstraintException e) {
-                Log.e(TAG, "UNIQUE CONSTRAINT EXCEPTION");
+    protected List<String> getCategories(List<AppDetail> apps){
+        List<String> categories = new ArrayList<>();
+        for (AppDetail appDetail: apps){
+            String category = appDetail.getCategory().getAttributes().getLabel();
+            if (!categories.contains(category))
+                categories.add(category);
+        }
+        return categories;
+    }
+
+    private void addCategoryButtons(List<String> categories){
+        for (final String category: categories){
+            Button newCategory = new Button(this);
+            newCategory.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT));
+            newCategory.setText(category);
+            newCategory.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<AppDetail> entry = getEntryByCategory(category);
+                    DataAdapter adapter = new DataAdapter(entry, PruebaRappiApp.getInstance());
+                    mRecyclerView.swapAdapter(adapter, true);
+
+                }
+            });
+            mCategories.addView(newCategory);
+        }
+    }
+
+    protected List<AppDetail> getEntryByCategory(String category){
+        List<AppDetail> entry = new ArrayList<>();
+        if (this.entry != null){
+            for (AppDetail appDetail: this.entry){
+                String app_category = appDetail.getCategory().getAttributes().getLabel();
+                if (app_category.equals(category))
+                    entry.add(appDetail);
             }
         }
+        return entry;
+    }
+
+    @OnClick(R.id.btn_all_categories)
+    public void listAllCategories(){
+        if (entry != null){
+            DataAdapter adapter = new DataAdapter(this.entry, this);
+            mRecyclerView.swapAdapter(adapter, true);
+        }
+        AppDatabase.getEntryFromDatabase();
     }
 }
