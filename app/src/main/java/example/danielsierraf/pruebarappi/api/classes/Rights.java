@@ -9,6 +9,10 @@ import com.google.gson.annotations.SerializedName;
 public class Rights {
     private String label;
 
+    public Rights(String label){
+        this.label = label;
+    }
+
     public String getLabel() {
         return label;
     }
