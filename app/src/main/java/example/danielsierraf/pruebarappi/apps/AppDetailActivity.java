@@ -8,6 +8,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.easyandroidanimations.library.Animation;
+import com.easyandroidanimations.library.AnimationListener;
+import com.easyandroidanimations.library.BounceAnimation;
+import com.easyandroidanimations.library.ExplodeAnimation;
+import com.easyandroidanimations.library.FadeOutAnimation;
+import com.easyandroidanimations.library.RotationAnimation;
+import com.easyandroidanimations.library.SlideInAnimation;
+import com.easyandroidanimations.library.SlideOutAnimation;
+import com.easyandroidanimations.library.SlideOutUnderneathAnimation;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,5 +75,23 @@ public class AppDetailActivity extends AppCompatActivity {
         category.setText(intent.getStringExtra(EXTRA_CATEGORY));
         last_updated.setText(intent.getStringExtra(EXTRA_RELEASE_DATE));
         rights.setText(intent.getStringExtra(EXTRA_RIGHTS));
+
+        new BounceAnimation(imImage).setBounceDistance(50).setNumOfBounces(3).setDuration(500)
+                .animate();
+
+        new RotationAnimation(btn_price).setPivot(RotationAnimation.PIVOT_TOP_LEFT).setListener(new AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                new SlideInAnimation(summary).setDirection(Animation.DIRECTION_UP).animate();
+            }
+        }).animate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        new FadeOutAnimation(imImage).animate();
+        new SlideOutUnderneathAnimation(summary).setDirection(Animation.DIRECTION_RIGHT).animate();
+        new SlideOutAnimation(btn_price).setDirection(Animation.DIRECTION_LEFT).animate();
     }
 }

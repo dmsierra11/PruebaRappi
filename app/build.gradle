@@ -46,4 +46,6 @@ dependencies {
 
     // kotlin extensions
     compile "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:${dbflow_version}"
+
+    compile 'com.github.2359media:EasyAndroidAnimations:0.8'
 }
