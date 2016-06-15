@@ -3,9 +3,8 @@ package example.danielsierraf.pruebarappi.apps;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.net.wifi.WifiManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,9 +17,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.ThreadEnforcer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +49,8 @@ import retrofit2.Response;
 public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.categories)
     LinearLayout mCategories;
+    @BindView(R.id.offline_label)
+    TextView mOfflineText;
     @BindView(R.id.card_recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.progressBar)
@@ -65,8 +70,9 @@ public class MenuActivity extends AppCompatActivity {
         FlowManager.init(new FlowConfig.Builder(this)
                 .openDatabasesOnInit(true).build());
         getAppsDataFromService();
-        registerReceiver(new NetworkStatusReceiver(),
-                new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+//        registerReceiver(new NetworkConnectivityReceiver(),
+//                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        BusStation.getBus().register(this);
     }
 
     private void getAppsDataFromService(){
@@ -220,6 +226,16 @@ public class MenuActivity extends AppCompatActivity {
             DataAdapter adapter = new DataAdapter(this.entry, this);
             mRecyclerView.swapAdapter(adapter, true);
         }
-        AppDatabase.getEntryFromDatabase();
+    }
+
+    @Subscribe
+    public void isNetworkAvailable(Boolean isAvailable){
+        if (isAvailable){
+            Log.d(TAG, "There is an active internet connection");
+            mOfflineText.setVisibility(View.GONE);
+        } else {
+            Log.d(TAG, "There is no network available");
+            mOfflineText.setVisibility(View.VISIBLE);
+        }
     }
 }

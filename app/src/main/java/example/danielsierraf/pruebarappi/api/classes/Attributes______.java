@@ -20,6 +20,10 @@ public class Attributes______ {
     @Expose
     private String label;
 
+    public Attributes______(String label){
+        this.label = label;
+    }
+
     public String getImId() {
         return imId;
     }

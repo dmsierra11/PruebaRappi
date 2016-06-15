@@ -14,6 +14,13 @@ public class Id {
     @Expose
     private Attributes____ attributes;
 
+    public Id(){
+    }
+
+    public Id(Attributes____ attributes){
+        this.attributes = attributes;
+    }
+
     public String getLabel() {
         return label;
     }

@@ -14,6 +14,10 @@ public class ImArtist {
     @Expose
     private Attributes_____ attributes;
 
+    public ImArtist(String label){
+        this.label = label;
+    }
+
     public String getLabel() {
         return label;
     }

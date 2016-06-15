@@ -14,6 +14,10 @@ public class Attributes____ {
     @Expose
     private String imBundleId;
 
+    public Attributes____(String id){
+        this.imId = id;
+    }
+
     public String getImId() {
         return imId;
     }

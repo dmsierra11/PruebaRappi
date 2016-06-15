@@ -11,6 +11,13 @@ public class Link {
     @Expose
     private Attributes___ attributes;
 
+    public Link() {
+    }
+
+    public Link(Attributes___ attributes) {
+        this.attributes = attributes;
+    }
+
     public Attributes___ getAttributes() {
         return attributes;
     }

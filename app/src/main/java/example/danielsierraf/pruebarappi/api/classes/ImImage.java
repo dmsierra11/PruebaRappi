@@ -14,6 +14,10 @@ public class ImImage {
     @Expose
     private Attributes attributes;
 
+    public ImImage(String label){
+        this.label = label;
+    }
+
     public String getLabel() {
         return label;
     }

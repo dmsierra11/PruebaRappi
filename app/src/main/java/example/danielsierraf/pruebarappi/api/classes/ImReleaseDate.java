@@ -14,6 +14,10 @@ public class ImReleaseDate {
     @Expose
     private Attributes_______ attributes;
 
+    public ImReleaseDate(Attributes_______ attributes){
+        this.attributes = attributes;
+    }
+
     public String getLabel() {
         return label;
     }

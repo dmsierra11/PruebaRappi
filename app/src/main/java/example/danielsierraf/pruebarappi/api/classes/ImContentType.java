@@ -11,6 +11,10 @@ public class ImContentType {
     @Expose
     private Attributes__ attributes;
 
+    public ImContentType(Attributes__ attributes){
+        this.attributes = attributes;
+    }
+
     public Attributes__ getAttributes() {
         return attributes;
     }

@@ -28,6 +28,16 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textColor="@color/error_text_color"
+        android:background="@color/error_background_color"
+        android:id="@+id/offline_label"
+        android:text="@string/offline_text"
+        android:layout_below="@id/categories_bar"/>
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -7,9 +7,14 @@ import com.google.gson.annotations.SerializedName;
  * Created by danielsierraf on 6/11/16.
  */
 public class Category {
+
     @SerializedName("attributes")
     @Expose
     private Attributes______ attributes;
+
+    public Category(Attributes______ attributes){
+        this.attributes = attributes;
+    }
 
     public Attributes______ getAttributes() {
         return attributes;

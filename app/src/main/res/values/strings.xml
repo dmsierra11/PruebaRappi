@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">PruebaRappi</string>
     <string name="all_categories">All</string>
+    <string name="offline_text">Offline</string>
 </resources>

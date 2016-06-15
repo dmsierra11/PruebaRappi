@@ -8,6 +8,14 @@ public class Attributes___ {
     private String type;
     private String href;
 
+    public Attributes___(){
+
+    }
+
+    public Attributes___(String href){
+        this.href = href;
+    }
+
     public String getRel() {
         return rel;
     }

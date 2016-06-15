@@ -3,6 +3,7 @@
     package="example.danielsierraf.pruebarappi">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -10,13 +11,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".utils.PruebaRappiApp">
-        <activity android:name=".apps.MenuActivity">
+
+        <activity android:name=".apps.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".apps.MenuActivity"
+            android:label="@string/app_name"/>
+
         <activity
             android:name=".apps.AppDetailActivity"
             android:parentActivityName=".apps.MenuActivity" >
@@ -24,6 +31,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".apps.AppDetailActivity" />
         </activity>
+
+        <receiver
+            android:name="example.danielsierraf.pruebarappi.apps.NetworkConnectivityReceiver"
+            android:exported="false">
+            <intent-filter >
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

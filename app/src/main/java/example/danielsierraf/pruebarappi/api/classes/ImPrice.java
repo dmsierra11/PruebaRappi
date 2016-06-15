@@ -14,6 +14,10 @@ public class ImPrice {
     @Expose
     private Attributes_ attributes;
 
+    public ImPrice(String label){
+        this.label = label;
+    }
+
     public String getLabel() {
         return label;
     }

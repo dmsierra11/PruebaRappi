@@ -6,9 +6,27 @@ import android.util.Log;
 import com.raizlabs.android.dbflow.annotation.Database;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import example.danielsierraf.pruebarappi.api.classes.AppDetail;
+import example.danielsierraf.pruebarappi.api.classes.Attributes__;
+import example.danielsierraf.pruebarappi.api.classes.Attributes___;
+import example.danielsierraf.pruebarappi.api.classes.Attributes____;
+import example.danielsierraf.pruebarappi.api.classes.Attributes______;
+import example.danielsierraf.pruebarappi.api.classes.Attributes_______;
+import example.danielsierraf.pruebarappi.api.classes.Category;
+import example.danielsierraf.pruebarappi.api.classes.Id;
+import example.danielsierraf.pruebarappi.api.classes.ImArtist;
+import example.danielsierraf.pruebarappi.api.classes.ImContentType;
+import example.danielsierraf.pruebarappi.api.classes.ImImage;
+import example.danielsierraf.pruebarappi.api.classes.ImName;
+import example.danielsierraf.pruebarappi.api.classes.ImPrice;
+import example.danielsierraf.pruebarappi.api.classes.ImReleaseDate;
+import example.danielsierraf.pruebarappi.api.classes.Link;
+import example.danielsierraf.pruebarappi.api.classes.Rights;
+import example.danielsierraf.pruebarappi.api.classes.Summary;
+import example.danielsierraf.pruebarappi.api.classes.Title;
 
 /**
  * Created by danielsierraf on 6/12/16.
@@ -60,8 +78,36 @@ public class AppDatabase {
     public static List<AppDetail> getEntryFromDatabase(){
         //TODO: Get Entry from database
         Log.d(TAG, "Getting entry from database");
-        List<Entry> entry = SQLite.select().from(Entry.class).queryList();
-        return null;
+        List<Entry> entries = SQLite.select().from(Entry.class).queryList();
+        List<AppDetail> apps = new ArrayList<>();
+        for (Entry entry: entries){
+            AppDetail appDetail = new AppDetail();
+
+            appDetail.setImName(new ImName(entry.getImName()));
+
+            final ImImage image = new ImImage(entry.getImImage());
+            List<ImImage> images = new ArrayList<ImImage>(){
+                {
+                    add(image);
+                    add(image);
+                    add(image);
+                }
+            };
+            appDetail.setImImage(images);
+
+            appDetail.setSummary(new Summary(entry.getSummary()));
+            appDetail.setImPrice(new ImPrice(entry.getImPrice()));
+            appDetail.setImContentType(new ImContentType(new Attributes__(entry.getImContentType())));
+            appDetail.setRights(new Rights(entry.getRights()));
+            appDetail.setTitle(new Title(entry.getTitle()));
+            appDetail.setLink(new Link(new Attributes___(entry.getLink())));
+            appDetail.setId(new Id(new Attributes____(String.valueOf(entry.getId()))));
+            appDetail.setImArtist(new ImArtist(entry.getImArtist()));
+            appDetail.setCategory(new Category(new Attributes______(entry.getCategory())));
+            appDetail.setImReleaseDate(new ImReleaseDate(new Attributes_______(entry.getImReleaseDate())));
+            apps.add(appDetail);
+        }
+        return apps;
     }
 
     public static void deleteEntryTable(){
