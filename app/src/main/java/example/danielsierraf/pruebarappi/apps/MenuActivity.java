@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -27,6 +29,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -103,6 +106,12 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void initViews(){
+
+        if (Helper.isNetworkAvailable(this))
+            mOfflineText.setVisibility(View.GONE);
+        else
+            mOfflineText.setVisibility(View.VISIBLE);
+
         btn_all_categories.setVisibility(View.VISIBLE);
 
         //Categories
@@ -141,27 +150,32 @@ public class MenuActivity extends AppCompatActivity {
 
                 View child = rv.findChildViewUnder(e.getX(), e.getY());
                 if(child != null && gestureDetector.onTouchEvent(e)) {
-                    int position = rv.getChildAdapterPosition(child);
+//                    int position = rv.getChildAdapterPosition(child);
+                    DataAdapter.ViewHolder holder = (DataAdapter.ViewHolder) rv.getChildViewHolder(child);
+                    String id = holder.getId();
 
-                    AppDetail appDetail = entry.get(position);
-                    Intent intent = new Intent(MenuActivity.this, AppDetailActivity.class);
-                    intent.putExtra(AppDetailActivity.EXTRA_IMAGE, appDetail.getImImage().get(2)
-                            .getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_IMARTIST, appDetail.getImArtist()
-                            .getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_IMNAME, appDetail.getImName().getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_APP_TITLE, appDetail.getTitle().getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_PRICE, appDetail.getImPrice().getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_SUMMARY, appDetail.getSummary()
-                            .getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_CATEGORY, appDetail.getCategory()
-                            .getAttributes().getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_RELEASE_DATE, appDetail.getImReleaseDate()
-                            .getAttributes().getLabel());
-                    intent.putExtra(AppDetailActivity.EXTRA_LINK, appDetail.getLink().getAttributes()
-                            .getHref());
-                    intent.putExtra(AppDetailActivity.EXTRA_RIGHTS, appDetail.getRights().getLabel());
-                    startActivity(intent);
+                    AppDetail appDetail = getEntryById(id);
+                    if (appDetail != null){
+                        //                    AppDetail appDetail = entry.get(position);
+                        Intent intent = new Intent(MenuActivity.this, AppDetailActivity.class);
+                        intent.putExtra(AppDetailActivity.EXTRA_IMAGE, appDetail.getImImage().get(2)
+                                .getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_IMARTIST, appDetail.getImArtist()
+                                .getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_IMNAME, appDetail.getImName().getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_APP_TITLE, appDetail.getTitle().getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_PRICE, appDetail.getImPrice().getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_SUMMARY, appDetail.getSummary()
+                                .getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_CATEGORY, appDetail.getCategory()
+                                .getAttributes().getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_RELEASE_DATE, appDetail.getImReleaseDate()
+                                .getAttributes().getLabel());
+                        intent.putExtra(AppDetailActivity.EXTRA_LINK, appDetail.getLink().getAttributes()
+                                .getHref());
+                        intent.putExtra(AppDetailActivity.EXTRA_RIGHTS, appDetail.getRights().getLabel());
+                        startActivity(intent);
+                    }
                 }
 
                 return false;
@@ -191,9 +205,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void addCategoryButtons(List<String> categories){
         for (final String category: categories){
-            Button newCategory = new Button(this);
-            newCategory.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT));
+            Button newCategory = (Button) getLayoutInflater().inflate(R.layout.button_template, null);
             newCategory.setText(category);
             newCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -220,6 +232,17 @@ public class MenuActivity extends AppCompatActivity {
         return entry;
     }
 
+    protected AppDetail getEntryById(String id){
+        if (this.entry != null){
+            for (AppDetail appDetail: this.entry){
+                String id_ = appDetail.getId().getAttributes().getImId();
+                if (id_.equals(id))
+                    return appDetail;
+            }
+        }
+        return null;
+    }
+
     @OnClick(R.id.btn_all_categories)
     public void listAllCategories(){
         if (entry != null){
@@ -232,9 +255,11 @@ public class MenuActivity extends AppCompatActivity {
     public void isNetworkAvailable(Boolean isAvailable){
         if (isAvailable){
             Log.d(TAG, "There is an active internet connection");
+            Toast.makeText(this, "There is an active internet connection", Toast.LENGTH_SHORT).show();
             mOfflineText.setVisibility(View.GONE);
         } else {
             Log.d(TAG, "There is no network available");
+            Toast.makeText(this, "There is no network available", Toast.LENGTH_SHORT).show();
             mOfflineText.setVisibility(View.VISIBLE);
         }
     }

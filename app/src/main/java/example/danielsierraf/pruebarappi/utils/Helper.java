@@ -1,6 +1,8 @@
 package example.danielsierraf.pruebarappi.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,5 +20,23 @@ public class Helper {
         Log.d(TAG, "Size: "+msg);
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
         return tabletSize;
+    }
+
+    public static boolean isNetworkAvailable(Context ctx) {
+        ConnectivityManager cm;
+        NetworkInfo info = null;
+        try
+        {
+            cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            info = cm.getActiveNetworkInfo();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        if (info != null && info.isConnected())
+            return true;
+        else
+            return false;
     }
 }

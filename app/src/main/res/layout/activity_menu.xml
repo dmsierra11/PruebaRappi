@@ -16,7 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:id="@+id/categories">
+            android:id="@+id/categories"
+            android:padding="@dimen/list_elements_margin">
 
             <!--Category buttons-->
             <Button
@@ -24,7 +25,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/all_categories"
                 android:id="@+id/btn_all_categories"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:padding="@dimen/activity_vertical_margin" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -36,12 +39,13 @@
         android:background="@color/error_background_color"
         android:id="@+id/offline_label"
         android:text="@string/offline_text"
-        android:layout_below="@id/categories_bar"/>
+        android:layout_below="@id/categories_bar"
+        android:gravity="center_horizontal"/>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/categories_bar">
+        android:layout_below="@id/offline_label">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/card_recycler_view"

@@ -38,6 +38,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         AppDetail appDetail = entry.get(position);
         holder.name.setText(appDetail.getImName().getLabel());
         holder.title.setText(appDetail.getTitle().getLabel());
+        holder.id = appDetail.getId().getAttributes().getImId();
         Glide.with(mContext).load(appDetail.getImImage().get(0).getLabel())
                 .override(240, 240)
                 .into(holder.image);
@@ -49,6 +50,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
+        String id;
         TextView name;
         TextView title;
         ImageView image;
@@ -57,6 +59,22 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             name = (TextView) view.findViewById(R.id.app_name);
             title = (TextView) view.findViewById(R.id.app_summary);
             image = (ImageView) view.findViewById(R.id.app_photo);
+        }
+
+        public TextView getName() {
+            return name;
+        }
+
+        public TextView getTitle() {
+            return title;
+        }
+
+        public ImageView getImage() {
+            return image;
+        }
+
+        public String getId() {
+            return id;
         }
     }
 }
