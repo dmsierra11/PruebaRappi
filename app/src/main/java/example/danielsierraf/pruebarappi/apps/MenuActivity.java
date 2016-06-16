@@ -1,11 +1,8 @@
 package example.danielsierraf.pruebarappi.apps;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,22 +11,22 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easyandroidanimations.library.Animation;
+import com.easyandroidanimations.library.FoldAnimation;
+import com.easyandroidanimations.library.FoldLayout.Orientation;
+import com.easyandroidanimations.library.SlideInAnimation;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.squareup.otto.ThreadEnforcer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,8 +70,6 @@ public class MenuActivity extends AppCompatActivity {
         FlowManager.init(new FlowConfig.Builder(this)
                 .openDatabasesOnInit(true).build());
         getAppsDataFromService();
-//        registerReceiver(new NetworkConnectivityReceiver(),
-//                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         BusStation.getBus().register(this);
     }
 
@@ -117,6 +112,7 @@ public class MenuActivity extends AppCompatActivity {
         //Categories
         List<String> categories = getCategories(entry);
         addCategoryButtons(categories);
+        new SlideInAnimation(mCategories).setDirection(Animation.DIRECTION_UP).animate();
 
         //List of apps
         mRecyclerView.setHasFixedSize(true);
@@ -131,6 +127,7 @@ public class MenuActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         DataAdapter adapter = new DataAdapter(entry, this);
         mRecyclerView.setAdapter(adapter);
+        new SlideInAnimation(mRecyclerView).setDirection(Animation.DIRECTION_DOWN).animate();
 
         addOnItemTouchListener();
     }
@@ -255,11 +252,11 @@ public class MenuActivity extends AppCompatActivity {
     public void isNetworkAvailable(Boolean isAvailable){
         if (isAvailable){
             Log.d(TAG, "There is an active internet connection");
-            Toast.makeText(this, "There is an active internet connection", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "There is an active internet connection", Toast.LENGTH_SHORT).show();
             mOfflineText.setVisibility(View.GONE);
         } else {
             Log.d(TAG, "There is no network available");
-            Toast.makeText(this, "There is no network available", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "There is no network available", Toast.LENGTH_SHORT).show();
             mOfflineText.setVisibility(View.VISIBLE);
         }
     }

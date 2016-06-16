@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.easyandroidanimations.library.FoldAnimation;
+import com.easyandroidanimations.library.FoldLayout.Orientation;
 
 import java.util.List;
 

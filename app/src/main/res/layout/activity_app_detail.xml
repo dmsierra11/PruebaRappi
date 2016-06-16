@@ -44,17 +44,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_price"
-        android:layout_alignBottom="@id/imArtist"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignStart="@id/imArtist"
+        android:layout_alignLeft="@id/imArtist"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_below="@id/imArtist"
         style="@style/Widget.AppCompat.Button.Colored"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imArtist"
+        android:layout_below="@id/btn_price"
         android:layout_alignStart="@id/imImage"
         android:layout_alignLeft="@id/imImage"
         android:layout_margin="@dimen/activity_horizontal_margin">

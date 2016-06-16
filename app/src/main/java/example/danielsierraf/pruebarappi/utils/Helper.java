@@ -18,7 +18,7 @@ public class Helper {
         boolean tabletSize = context.getResources().getBoolean(R.bool.is_tablet);
         String msg = tabletSize? "Tablet size": "Smartphone size";
         Log.d(TAG, "Size: "+msg);
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
         return tabletSize;
     }
 
