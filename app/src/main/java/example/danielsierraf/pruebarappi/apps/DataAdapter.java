@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +15,8 @@ import com.easyandroidanimations.library.FoldLayout.Orientation;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import example.danielsierraf.pruebarappi.R;
 import example.danielsierraf.pruebarappi.api.classes.AppDetail;
 
@@ -53,14 +56,12 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         String id;
-        TextView name;
-        TextView title;
-        ImageView image;
+        @BindView(R.id.app_name) TextView name;
+        @BindView(R.id.app_summary) TextView title;
+        @BindView(R.id.app_photo) ImageView image;
         public ViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.app_name);
-            title = (TextView) view.findViewById(R.id.app_summary);
-            image = (ImageView) view.findViewById(R.id.app_photo);
+            ButterKnife.bind(this, view);
         }
 
         public TextView getName() {
