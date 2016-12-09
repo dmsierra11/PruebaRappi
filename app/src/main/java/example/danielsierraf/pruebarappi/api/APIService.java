@@ -11,9 +11,4 @@ public interface APIService {
 
     @POST("json")
     Call<Response_> getResponse();
-//    @POST("weather")
-//    Call<Rain> getRain(@Query("q") String q, @Query("APPID") String APPID);
-//
-//    @POST("weather")
-//    Call<WeatherInfo> getWeatherInfo(@Query("q") String q, @Query("APPID") String APPID);
 }

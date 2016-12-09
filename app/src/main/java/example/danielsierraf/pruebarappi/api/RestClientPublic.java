@@ -31,3 +31,4 @@ public class RestClientPublic {
         return this.publicService;
     }
 }
+

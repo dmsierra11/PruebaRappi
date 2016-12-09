@@ -17,11 +17,4 @@ public class PublicService {
         return apiService.getResponse();
     }
 
-//    public Call<Rain> getRain(String q, String APPID){
-//        return apiService.getRain(q, APPID);
-//    }
-//
-//    public Call<WeatherInfo> getWeatherInfo(String q, String APPID){
-//        return apiService.getWeatherInfo(q, APPID);
-//    }
 }
